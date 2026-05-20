@@ -37,7 +37,7 @@
 //     app.post('/facility', async (req, res) => {
 //       const facility = req.body
 //       console.log(facility);
-      
+
 //       const result = await facilityCollection.insertOne(facility)
 
 //       res.json(result)
@@ -58,7 +58,7 @@
 //       try {
 //         const { id } = req.params;
 //         const updatedData = req.body;
-        
+
 //         // Remove _id field if it was passed from the frontend to avoid immutable field errors
 //         delete updatedData._id;
 
@@ -117,7 +117,7 @@
 
 // app.listen(PORT, () => {
 //     console.log(`server running on port ${PORT}`);
-    
+
 // })
 
 
@@ -191,7 +191,7 @@ async function run() {
       try {
         const { id } = req.params;
         const updatedData = req.body;
-        
+
         delete updatedData._id; // Prevent immutable field errors
 
         const filter = { _id: new ObjectId(id) };
@@ -202,8 +202,8 @@ async function run() {
             location: updatedData.location,
             price_per_hour: Number(updatedData.price_per_hour),
             capacity: Number(updatedData.capacity),
-            available_slots: Array.isArray(updatedData.available_slots) 
-              ? updatedData.available_slots 
+            available_slots: Array.isArray(updatedData.available_slots)
+              ? updatedData.available_slots
               : updatedData.available_slots.split(',').map(slot => slot.trim()),
             image: updatedData.image,
             description: updatedData.description
@@ -247,6 +247,23 @@ async function run() {
       }
     });
 
+    // ==========================================
+    // GET BOOKINGS FOR A SPECIFIC USER BY EMAIL
+    // ==========================================
+    app.get('/booking/:email', async (req, res) => {
+      try {
+        const { email } = req.params;
+        const query = { userEmail: email };
+
+        // Sorts by newest bookings first
+        const result = await bookingCollection.find(query).sort({ bookedAt: -1 }).toArray();
+        res.json(result);
+      } catch (error) {
+        console.error("Fetch bookings error:", error);
+        res.status(500).json({ error: "Failed to fetch user bookings" });
+      }
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
@@ -256,9 +273,9 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('Server is running fine!')
+  res.send('Server is running fine!')
 });
 
 app.listen(PORT, () => {
-    console.log(`server running on port ${PORT}`);
+  console.log(`server running on port ${PORT}`);
 });
