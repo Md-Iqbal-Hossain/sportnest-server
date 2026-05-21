@@ -64,7 +64,6 @@ async function run() {
     app.get('/facility-types', async (req, res) => {
       try {
         // Scans all documents and returns an array of unique sports strings 
-        // e.g., ["basketball", "volleyball", "swimming", "gym"]
         const types = await facilityCollection.distinct('facility_type');
         res.json(types);
       } catch (error) {
