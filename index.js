@@ -705,6 +705,12 @@ async function run() {
     const facilityCollection = db.collection('facility');
     const bookingCollection = db.collection('bookings');
 
+    //featured
+    app.get('/featured', async (req, res) => {
+      const result = await facilityCollection.find().limit(6).toArray()
+      res.json(result)
+    })
+
     // ==========================================
     // GET UNIQUE SPORT TYPES DYNAMICALLY FROM DB
     // ==========================================
